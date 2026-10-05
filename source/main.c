@@ -16,6 +16,13 @@ static CPU_TS ts;
 static OS_TCB Task2TCB;
 static CPU_STK Task2Stk[TASK2_STK_SIZE];
 
+/* Task 3 */
+#define TASK3_STK_SIZE 512u
+#define TASK3_STK_SIZE_LIMIT (TASK2_STK_SIZE / 10u)
+#define TASK3_PRO 3u
+static OS_TCB Task3TCB;
+static CPU_STK Task3Stk[TASK3_STK_SIZE];
+
 /* Example semaphore */
 static OS_SEM semTest;
 
@@ -29,7 +36,14 @@ static void Task2(void *p_arg) {
 		gpio_drv_toggle(PIN_LED_RED);
 	}
 }
-
+static void Task3(void *p_arg) {
+	(void) p_arg;
+	OS_ERR os_err;
+	while (1) {
+		OSTimeDly(100, OS_OPT_TIME_DLY, &os_err);
+		gpio_drv_toggle(PIN_LED_BLUE);
+	}
+}
 static void TaskStart(void *p_arg) {
 	(void) p_arg;
 	OS_ERR os_err;
@@ -61,6 +75,9 @@ static void TaskStart(void *p_arg) {
 				 TASK2_STK_SIZE,	   // stack size
 				 0u, 0u, 0u, (OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), &os_err);
 
+	/* Create Task3 */
+	OSTaskCreate(&Task3TCB, "Task 3", Task3, 0u, TASK3_PRO, &Task3Stk[0u], TASK3_STK_SIZE_LIMIT, TASK3_STK_SIZE, 0u, 0u,
+				 0u, (OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR), &os_err);
 	if (os_err != OS_ERR_NONE) {
 		while (1) {
 		}
