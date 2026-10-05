@@ -1,7 +1,14 @@
 #include "drivers/HAL/include/board.h"
 #include "hardware.h"
 #include <os.h>
+/* message queue */
+typedef enum { BLUE_LED = 0, GREEN_LED } LED_COLOR_t;
 
+/* Messages are pointers, so the data they point to must outlive the post */
+static const LED_COLOR_t msg_blue = BLUE_LED;
+static const LED_COLOR_t msg_green = GREEN_LED;
+
+static OS_Q led_queue;
 /* Task Start */
 #define TASKSTART_STK_SIZE 512u
 #define TASKSTART_PRIO 2u
@@ -29,20 +36,44 @@ static OS_SEM semTest;
 static void Task2(void *p_arg) {
 	(void) p_arg;
 	OS_ERR os_err;
+	LED_COLOR_t color = BLUE_LED;
 
 	while (1) {
-		OSSemPost(&semTest, OS_OPT_POST_1, &os_err);
-		OSTimeDlyHMSM(0u, 0u, 0u, 500u, OS_OPT_TIME_HMSM_STRICT, &os_err);
+		// OSSemPost(&semTest, OS_OPT_POST_1, &os_err);
+		/* what color led msg to send ?*/
+		const LED_COLOR_t *p_msg = (color == BLUE_LED) ? &msg_blue : &msg_green;
+		OSQPost(&led_queue, (void *) p_msg, (OS_MSG_SIZE) sizeof(LED_COLOR_t), OS_OPT_POST_FIFO, &os_err);
+		if (os_err != OS_ERR_NONE) {
+			while (1) {
+			}
+		}
+		color = (color == BLUE_LED) ? GREEN_LED : BLUE_LED;
+
 		gpio_drv_toggle(PIN_LED_RED);
+		OSTimeDlyHMSM(0u, 0u, 0u, 500u, OS_OPT_TIME_HMSM_STRICT, &os_err);
 	}
 }
 static void Task3(void *p_arg) {
 	(void) p_arg;
 	OS_ERR os_err;
+	OS_MSG_SIZE msg_size;
+	CPU_TS ts;
+	LED_COLOR_t *p_color;
+
 	while (1) {
-		// OSTimeDly(100, OS_OPT_TIME_DLY, &os_err);
-		OSSemPend(&semTest, 0, OS_OPT_PEND_BLOCKING, 0u, &os_err);
-		gpio_drv_toggle(PIN_LED_BLUE);
+		p_color = (LED_COLOR_t *) OSQPend(&led_queue, 0u, OS_OPT_PEND_BLOCKING, &msg_size, &ts, &os_err);
+		if (os_err != OS_ERR_NONE) {
+			continue;
+		}
+
+		switch (*p_color) {
+			case BLUE_LED:
+				gpio_drv_toggle(PIN_LED_BLUE);
+				break;
+			case GREEN_LED:
+				gpio_drv_toggle(PIN_LED_GREEN);
+				break;
+		}
 	}
 }
 static void TaskStart(void *p_arg) {
@@ -64,6 +95,7 @@ static void TaskStart(void *p_arg) {
 	ts = CPU_TS_TmrRd();
 	/* Create semaphore */
 	OSSemCreate(&semTest, "Sem Test", 0u, &os_err);
+	OSQCreate(&led_queue, "Led Queue", 10, &os_err);
 
 	/* Create Task2 */
 	OSTaskCreate(&Task2TCB,			   // tcb
