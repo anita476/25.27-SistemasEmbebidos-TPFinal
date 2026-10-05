@@ -40,7 +40,8 @@ static void Task3(void *p_arg) {
 	(void) p_arg;
 	OS_ERR os_err;
 	while (1) {
-		OSTimeDly(100, OS_OPT_TIME_DLY, &os_err);
+		// OSTimeDly(100, OS_OPT_TIME_DLY, &os_err);
+		OSSemPend(&semTest, 0, OS_OPT_PEND_BLOCKING, 0u, &os_err);
 		gpio_drv_toggle(PIN_LED_BLUE);
 	}
 }
@@ -84,7 +85,7 @@ static void TaskStart(void *p_arg) {
 	}
 	while (1) {
 		OSTimeDlyHMSM(0u, 0u, 0u, 999u, OS_OPT_TIME_HMSM_STRICT, &os_err);
-		gpio_drv_toggle(PIN_LED_GREEN);
+		// gpio_drv_toggle(PIN_LED_GREEN);
 	}
 }
 
