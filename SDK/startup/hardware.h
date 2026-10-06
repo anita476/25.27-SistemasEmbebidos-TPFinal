@@ -131,4 +131,6 @@ void hw_Init (void);
  *    ENET_Error_IRQHandler
  */
 
+void hw_EnableInterrupts (void);
+void hw_DisableInterrupts (void);
 #endif /* _HARDWARE_H_ */

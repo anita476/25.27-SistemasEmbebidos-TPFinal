@@ -34,26 +34,13 @@
 #define PIN_ENC_CHNB PORTNUM2PIN(PC, 2)
 #define PIN_SW_ENC PORTNUM2PIN(PA, 2)
 
-// DEnc board status leds selection pins
-#define PIN_U1B_STATUS0 PORTNUM2PIN(PC, 7)
-#define PIN_U1B_STATUS1 PORTNUM2PIN(PC, 0)
-
-// DEnc board digit display selection pins
-#define PIN_U1A_SEL0 PORTNUM2PIN(PC, 9)
-#define PIN_U1A_SEL1 PORTNUM2PIN(PC, 8)
-
 // Magnetic Card Reader pins
 #define PIN_CARD_DATA PORTNUM2PIN(PB, 23)
 #define PIN_CARD_CLOCK PORTNUM2PIN(PA, 1)
 #define PIN_CARD_ENABLE PORTNUM2PIN(PB, 9)
 
-#define DEC_ACTIVE LOW
-
 #define SW_ACTIVE LOW
 #define SW_INPUT_TYPE INPUT_PULLUP // en realidad para sw3 no hace falta, para sw2 SI
-
-#define DISPLAY_PINS 8
-#define DISPLAY_SEG_ACTIVE HIGH
 
 #define SR_DATA PORTNUM2PIN(PD, 1) // serial data in
 #define SR_SCLK PORTNUM2PIN(PD, 0) // shift clock
