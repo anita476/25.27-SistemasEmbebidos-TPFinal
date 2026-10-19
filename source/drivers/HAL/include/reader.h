@@ -1,32 +1,15 @@
 #ifndef _READER_H_
 #define _READER_H_
+#include <os.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-/**
- * @brief Initialize reader driver
- * @returns True if successful, false if not
- */
-bool reader_drv_init(void);
-
-/**
- * @brief Evaluates whether theres a pending card read event
- * @returns True if theres an unread card that finished processing, false if not@
- */
-bool reader_drv_event(void);
-
-/**
- * @brief Returns a a card number by pointer, if one exists and hasnt been processed yet
- * @param out_buf Pointer to the card buffer COPY.
- * @param out_length Length of the buffer.
- * @note Calling this function sets the event flag to false.
- */
-void reader_drv_card(uint8_t *out_buf, uint8_t *out_len);
+typedef struct DriverMsg DriverMsg_t;
 
 /********CODE DEFINITIONS ***************/
 
-#define ID_LENGHT 8U
+#define CARD_LENGTH 8U
 
 // ISO/IEC 7811-6 Coded Characters
 
@@ -51,5 +34,45 @@ void reader_drv_card(uint8_t *out_buf, uint8_t *out_len);
 #define CODED_D 0b01101 // Symbolizes =
 #define CODED_E 0b01110 // Symbolizes >
 #define CODED_F 0b11111 // Symbolizes ?
+
+typedef struct {
+	uint8_t id[CARD_LENGTH];
+	uint8_t length;
+} Card_t;
+
+/**
+ * @brief Initialize reader driver
+ * @returns True if successful, false if not
+ */
+bool reader_drv_init(void);
+
+/**
+ * @brief Evaluates whether theres a pending card read event
+ * @returns True if theres an unread card that finished processing, false if not@
+ */
+bool reader_drv_event(void);
+
+/**
+ * @brief Returns a a card number by pointer, if one exists and hasnt been processed yet
+ * @param out_buf Pointer to the card buffer COPY.
+ * @param out_length Length of the buffer.
+ * @note Calling this function sets the event flag to false.
+ */
+void reader_drv_card(uint8_t *out_buf, uint8_t *out_len);
+
+/**
+ * @brief Creates the reader task.
+ * @param event_queue Pointer to the queue where the driver will publish MSG_TYPE_CARD_READ msgs when a card is read.
+ * @param prio Desired task priority
+ * @returns OS_ERR_NONE if successfull, corresponding OS error code otherwise
+ */
+OS_ERR reader_drv_task_create(OS_Q *event_queue, OS_PRIO prio);
+
+/**
+ * @brief Return a card event message to the reader pool after processing it.
+ * @param msg The pointer to the message received via event_queue
+ * @note MUST be called after processing the message
+ */
+void reader_drv_release_event(DriverMsg_t *msg);
 
 #endif /* _READER_H_ */

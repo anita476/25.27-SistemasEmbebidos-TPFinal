@@ -228,7 +228,7 @@ static void action_show_greeting(void) {
 	// Reset everything:
 	g_app_ctx.card_curr_dig = 0;
 	g_app_ctx.card_input_ctr = 0;
-	g_app_ctx.card_input_len = ID_LENGHT;
+	g_app_ctx.card_input_len = ID_LENGTH;
 	g_app_ctx.pin_ctr = 0;
 	g_app_ctx.curr_dig = 0;
 	g_app_ctx.menu_selected = 0;
@@ -273,7 +273,7 @@ static void action_menu_select(void) {
 	(menu[g_app_ctx.menu_selected].preset_fun)();
 }
 static void action_show_card(void) {
-	uint8_t seg_buf[ID_LENGHT];
+	uint8_t seg_buf[ID_LENGTH];
 	/* need to translate chars to segment codes*/
 	for (int i = 0; i < g_app_ctx.card_len; i++) {
 		uint8_t digit = g_app_ctx.card_buff[i] - '0';
@@ -448,7 +448,7 @@ static void action_process_card_dig(void) {
 }
 
 static void action_show_card_manual(void) {
-	uint8_t seg_buf[ID_LENGHT];
+	uint8_t seg_buf[ID_LENGTH];
 	/* need to translate chars to segment codes*/
 	for (int i = 0; i < g_app_ctx.card_input_len; i++) {
 		uint8_t digit = g_app_ctx.card_input[i] - '0';

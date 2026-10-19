@@ -18,10 +18,10 @@ typedef struct {
 	uint8_t timer_misc_err;
 	uint8_t display_intensity;
 	bool operation_result;
-	uint8_t card_buff[ID_LENGHT];
+	uint8_t card_buff[ID_LENGTH];
 	uint8_t card_len;
 
-	uint8_t card_input[ID_LENGHT];
+	uint8_t card_input[ID_LENGTH];
 	uint8_t card_input_len;
 	uint8_t card_input_ctr; /* how many card digits where writren*/
 	uint8_t card_curr_dig;
