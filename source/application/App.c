@@ -98,11 +98,17 @@ static EVENT App_CaptureEvent() {
 		return EV_RCV_CARD_F;
 	}
 	*/
-	DriverMsg_t *msg = OSQPend(&event_queue, 10u, OS_OPT_PEND_BLOCKING, NULL, NULL, &err);
+	OS_MSG_SIZE msg_size;
+	DriverMsg_t *msg = OSQPend(&event_queue, 10u, OS_OPT_PEND_NON_BLOCKING, &msg_size, NULL, &err);
+	// dont return, keep checking for events
+	/*
 	if (err != OS_ERR_NONE || msg == NULL) {
 		return EV_NONE;
 	}
-	switch (msg->type) {
+	*/
+	if(err == OS_ERR_NONE && msg != NULL){
+		switch (msg->type) {
+
 		case MSG_TYPE_CARD_READ:
 			g_app_ctx.card_len = msg->data.card.length;
 			memcpy(g_app_ctx.card_buff, msg->data.card.id, g_app_ctx.card_len);
@@ -115,6 +121,7 @@ static EVENT App_CaptureEvent() {
 
 		default:
 			break;
+	}
 	}
 	swEvent sw_ev = switch_drv_pop_event();
 	if (sw_ev.event_type == SW_EVENT_CLICK) {

@@ -141,6 +141,7 @@ static void TaskCardReader(void *p_arg) {
 	DriverMsg_t *msg;
 	Card_t discarded_card; // if we need to discard
 	OS_ERR err;
+	OS_MSG_SIZE free_slot_msg_size;
 	CPU_SR_ALLOC();
 
 	while (1) {
@@ -150,7 +151,8 @@ static void TaskCardReader(void *p_arg) {
 		}
 		/* if here, theres a card*/
 
-		msg = OSQPend(&free_card_slots, 0u, OS_OPT_PEND_NON_BLOCKING, NULL, NULL, &reader_queue_err);
+		msg = OSQPend(&free_card_slots, 0u, OS_OPT_PEND_NON_BLOCKING, &free_slot_msg_size, NULL,
+					  &reader_queue_err);
 		if (reader_queue_err == OS_ERR_Q_EMPTY) {
 			// no slot is free -> discard the car
 			reader_drv_card(discarded_card.id, &discarded_card.length);

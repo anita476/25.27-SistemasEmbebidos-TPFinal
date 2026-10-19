@@ -12,7 +12,7 @@ static OS_Q led_queue;
 
 /* Task Start */
 #define TASKSTART_STK_SIZE 512u
-#define TASKSTART_PRIO 2u
+#define TASKSTART_PRIO 4u
 static OS_TCB TaskStartTCB;
 static CPU_STK TaskStartStk[TASKSTART_STK_SIZE];
 static CPU_TS ts;
@@ -54,8 +54,10 @@ int main(void) {
 #endif
 
 	hw_Init();
+	hw_EnableInterrupts();
+	OSInit(&err);
 	hw_DisableInterrupts();
-	App_Init(); /* Program-specific setup */
+	App_Init(); /* Program-specific setup -> now needs os objects  */
 	hw_EnableInterrupts();
 
 	/* RGB LED */
@@ -67,7 +69,6 @@ int main(void) {
 	gpio_drv_write(PIN_LED_BLUE, !LED_ACTIVE);
 	gpio_drv_write(PIN_LED_GREEN, !LED_ACTIVE);
 
-	OSInit(&err);
 #if OS_CFG_SCHED_ROUND_ROBIN_EN > 0u
 	/* Enable task round robin. */
 	OSSchedRoundRobinCfg((CPU_BOOLEAN) 1, 0, &err);
