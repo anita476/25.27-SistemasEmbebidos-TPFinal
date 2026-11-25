@@ -151,8 +151,7 @@ static void TaskCardReader(void *p_arg) {
 		}
 		/* if here, theres a card*/
 
-		msg = OSQPend(&free_card_slots, 0u, OS_OPT_PEND_NON_BLOCKING, &free_slot_msg_size, NULL,
-					  &reader_queue_err);
+		msg = OSQPend(&free_card_slots, 0u, OS_OPT_PEND_NON_BLOCKING, &free_slot_msg_size, NULL, &reader_queue_err);
 		if (reader_queue_err == OS_ERR_Q_EMPTY) {
 			// no slot is free -> discard the car
 			reader_drv_card(discarded_card.id, &discarded_card.length);
@@ -221,7 +220,7 @@ OS_ERR reader_drv_task_create(OS_Q *event_queue, OS_PRIO prio) {
 	}
 	shared_event_queue = event_queue; /* we post to this queue and application processes*/
 	OSTaskCreate(&TaskReaderTCB, "Card Reader", TaskCardReader, NULL, prio, &TaskReaderStk[0],
-				 (TASK_READER_STK_SIZE - TASK_READER_STK_SIZE / 10u), TASK_READER_STK_SIZE, 0u, 0u, NULL,
+				 (TASK_READER_STK_SIZE / 10u), TASK_READER_STK_SIZE, 0u, 0u, NULL,
 				 OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR, &err);
 	if (err != OS_ERR_NONE) {
 		shared_event_queue = NULL;

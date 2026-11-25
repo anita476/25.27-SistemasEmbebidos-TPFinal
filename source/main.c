@@ -2,13 +2,15 @@
 #include "drivers/HAL/include/board.h"
 #include "hardware.h"
 #include <os.h>
+
+/**  for error management later
 typedef enum { BLUE_LED = 0, GREEN_LED } LED_COLOR_t;
 
-/* Messages are pointers, so the data they point to must outlive the post */
 static const LED_COLOR_t msg_blue = BLUE_LED;
 static const LED_COLOR_t msg_green = GREEN_LED;
 
 static OS_Q led_queue;
+**/
 
 /* Task Start */
 #define TASKSTART_STK_SIZE 512u
@@ -35,14 +37,13 @@ static void TaskStart(void *p_arg) {
 
 	ts = CPU_TS_TmrRd();
 	/* Create message queue */
-	OSQCreate(&led_queue, "Led Queue", 10, &os_err);
 
 	if (os_err != OS_ERR_NONE) {
 		while (1) {
 		}
 	}
 
-	/* run the actual application as one task*/
+	/* run the actual application as part of the task*/
 	App_Run();
 }
 

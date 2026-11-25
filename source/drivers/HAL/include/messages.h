@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 typedef enum {
+	MSG_TYPE_NONE = 0, /* fallback to avoid issues -> default*/
 	MSG_TYPE_CARD_READ,
 	MSG_TYPE_ENCODER_STEP,
 	MSG_TYPE_COUNT
